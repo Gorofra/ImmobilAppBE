@@ -1,0 +1,8 @@
+app.use('/repeatability',repeatabilityRoute);
+app.use('/qualification',qualificationRoute);
+app.use('/comparator',comparatorRoute);
+app.use('/interla',userRoute);
+const repeatabilityRoute = require('./routes/repeatability');
+const qualificationRoute = require('./routes/qualification');
+const comparatorRoute = require('./routes/comparator');
+const interlaboratoryRoute = require('./routes/interlaboratory');
