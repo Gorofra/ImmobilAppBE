@@ -1,9 +1,10 @@
 const express = require('express');
 const connection = require('../connection');
 const router = express.Router();
+const {checkIfAuthenticated} = require('../auth.middleware');
 
 
-router.get("/", ( req, res ) => { 
+router.get("/", checkIfAuthenticated, ( req, res ) => { 
     const query =`SELECT id , data , indirizzo FROM ricevute ORDER BY id`
     
     connection.query(query, (err, results) =>{
@@ -25,7 +26,7 @@ router.get("/", ( req, res ) => {
     })
 })
 
-router.get('/:id', (req, res) => {
+router.get('/:id',checkIfAuthenticated, (req, res) => {
     const query = `SELECT * FROM ricevute WHERE id = ?`;
     
     connection.query(query, [req.params.id], (err, results) => {
@@ -46,7 +47,7 @@ router.get('/:id', (req, res) => {
 });
 
 // Create new ricevuta
-router.post('/crea', (req, res) => {
+router.post('/crea',checkIfAuthenticated, (req, res) => {
     const { data, indirizzo, importo, mese_riferimento, anno_riferimento } = req.body;
     const query = `INSERT INTO ricevute (data, indirizzo, importo, mese_riferimento, anno_riferimento) VALUES (?, ?, ?, ?, ?)`;
     
@@ -67,7 +68,7 @@ router.post('/crea', (req, res) => {
 });
 
 // Update ricevuta
-router.put('/aggiorna/:id', (req, res) => {
+router.put('/aggiorna/:id',checkIfAuthenticated, (req, res) => {
     const { data, indirizzo, importo, mese_riferimento, anno_riferimento } = req.body;
     const query = `UPDATE ricevute SET data = ?, indirizzo = ?, importo = ?, mese_riferimento = ?, anno_riferimento = ? WHERE id = ?`;
     
@@ -89,7 +90,7 @@ router.put('/aggiorna/:id', (req, res) => {
 });
 
 // Delete ricevuta
-router.delete('/elimina/:id', (req, res) => {
+router.delete('/elimina/:id',checkIfAuthenticated, (req, res) => {
     const query = `DELETE FROM ricevute WHERE id = ?`;
     
     connection.query(query, [req.params.id], (err, result) => {
@@ -110,7 +111,7 @@ router.delete('/elimina/:id', (req, res) => {
 });
 
 // Get ricevute by mese e anno
-router.get('/periodo/:mese/:anno', (req, res) => {
+router.get('/periodo/:mese/:anno',checkIfAuthenticated, (req, res) => {
     const query = `SELECT * FROM ricevute WHERE mese_riferimento = ? AND anno_riferimento = ?`;
     
     connection.query(query, [req.params.mese, req.params.anno], (err, results) => {

@@ -2,7 +2,9 @@ const express = require('express');
 const connection = require('../connection');
 const router = express.Router();
 
-router.get("/", (req,res) =>{
+const {checkIfAuthenticated} = require('../auth.middleware');
+
+router.get("/", checkIfAuthenticated, (req,res) =>{
     const query = `
         SELECT nome, via, affittuario, locatore,
         costo_affitto, costo_condominio, costo_bollo FROM immo
@@ -27,7 +29,7 @@ router.get("/", (req,res) =>{
     });
 });
 
-router.get('/:via', (req, res) => {
+router.get('/:via', checkIfAuthenticated, (req, res) => {
     const query = `
         SELECT nome, via, affittuario, locatore,
         costo_affitto, costo_condominio, costo_bollo FROM immo
@@ -54,7 +56,7 @@ router.get('/:via', (req, res) => {
 });
 
 
-router.post('/registra', (req, res) =>{
+router.post('/registra', checkIfAuthenticated, (req, res) =>{
     const{nome, via, affittuario, locatore, costo_affitto, costo_condominio, costo_bollo} = req.body;
     const checkEmailQuery = 'SELECT * FROM immo WHERE via = ?';
 
@@ -77,7 +79,7 @@ router.post('/registra', (req, res) =>{
     });
 });
 
-router.put('/aggiorna/:via', (req, res) =>{
+router.put('/aggiorna/:via', checkIfAuthenticated, (req, res) =>{
     const {nome, via, affittuario, locatore, costo_affitto, costo_condominio, costo_bollo} = req.body;
     const query = 'UPDATE immo SET nome = ?, affittuario = ?, locatore = ?, costo_affitto = ?, costo_condominio = ?, costo_bollo = ? WHERE via = ?';
     connection.query(query, [ nome, via, affittuario, locatore, costo_condominio, costo_bollo] ,(err,res) =>{});
@@ -97,7 +99,7 @@ router.put('/aggiorna/:via', (req, res) =>{
 });
 
 
-router.delete('/elimina/:via', (req, res) => {
+router.delete('/elimina/:via', checkIfAuthenticated, (req, res) => {
     const query = 'DELETE FROM immo WHERE via = ?';
     connection.query(query, [req.params.via], (err, result) => {
         if (err) {
